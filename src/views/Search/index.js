@@ -1,34 +1,39 @@
 import { useState } from "react";
 import SearchBox from "./components/SearchBox/index";
-
 import data from "../../data/users.json"
 import "./style.css"
+import SearchResults from "./components/SearchResults";
 
 
 export default function Search() {
     const [isAtTop, setIsAtTop] = useState(false);
-    const [userData, setUserData] = useState(data);
     const [results, setResults] = useState("");
 
-    const handleCloseOpenSearch = () => setIsAtTop(!isAtTop);
+    const handleCloseSearch = () => {
+        setIsAtTop(false);
+        setResults([]);
+    }
+
     const handleSearchClick = (searchText) => {
-        if (userData?.length) {
-            const filteredData = userData.filter((value) => {
-                return (
-                    value.name.includes(searchText) || 
-                    value.phone.includes(searchText) ||
-                    value.email.includes(searchText) ||
-                    value.username.includes(searchText)
+        setIsAtTop(true)
+        if (data?.length) {
+            const searchTextMinus = searchText.toLowerCase()
+            const filteredData = data.filter((value) =>  (
+                    value.name.toLowerCase().includes(searchTextMinus) || 
+                    value.phone.toLowerCase().includes(searchTextMinus) ||
+                    value.email.toLowerCase().includes(searchTextMinus) ||
+                    value.username.toLowerCase().includes(searchTextMinus)
                     )
-            });
+            );
             setResults(filteredData)
         }
     }
 
-    console.log(userData)
+    console.log(results)
     return (
         <div className={`search ${isAtTop ? "search--top" : "search--center"}`}>
-            <SearchBox onSearch={handleSearchClick} onClose={handleCloseOpenSearch} />
+            <SearchBox onSearch={handleSearchClick} onClose={handleCloseSearch} isSearching={isAtTop} />
+            <SearchResults results={results} isSearching={isAtTop} />
         </div>
     );
 }
